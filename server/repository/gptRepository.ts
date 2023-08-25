@@ -1,5 +1,4 @@
 import { OPENAIAPI, TWITTER_PASSWORD, TWITTER_USERNAME } from '$/service/envValues';
-// import { OpenAI } from 'langchain/llms/openai';
 import { OpenAI } from 'openai';
 import type { Browser, BrowserContext, Page } from 'playwright';
 import { chromium } from 'playwright';
