@@ -87,7 +87,7 @@ const LangChain = () => {
   useEffect(() => {
     const intervalA = setInterval(() => {
       fetchGPTA();
-    }, 50000);
+    }, 5000);
 
     const intervalB = setInterval(() => {
       fetchGPTB();
