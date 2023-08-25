@@ -24,4 +24,10 @@ export const gptUseCase = {
 
     return tweet;
   },
+
+  fetchPlayBrwser: async () => {
+    const playBrwser = await gptRepository.fetchPlayBrwser();
+
+    return playBrwser;
+  },
 };

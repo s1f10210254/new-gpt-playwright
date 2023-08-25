@@ -50,9 +50,12 @@ const LangChain = () => {
       return res;
     }
   };
+  const playbrwser = async () => {
+    await apiClient.playbrwser.$get().catch(returnNull);
+  };
 
   //GTPAだけツイートの処理
-  const fetchGPTA = useCallback(async () => {
+  const CreateGPTA = useCallback(async () => {
     const res = await apiClient.GPTA.$get().catch(returnNull);
 
     if (res !== null) {
@@ -61,13 +64,14 @@ const LangChain = () => {
         if (newMessages.length > prevMessages.length) {
           console.log('nweMessages');
           fetchTweet(newMessages[newMessages.length - 1]);
+          playbrwser();
         }
         return newMessages;
       });
     }
   }, []);
 
-  const fetchGPTB = async () => {
+  const CreateGPTB = async () => {
     const res = await apiClient.GPTB.$get().catch(returnNull);
 
     if (res !== null) {
@@ -75,7 +79,7 @@ const LangChain = () => {
     }
   };
 
-  const fetchGPTC = async () => {
+  const CreateGPTC = async () => {
     const res = await apiClient.GPTC.$get().catch(returnNull);
 
     if (res !== null) {
@@ -86,15 +90,15 @@ const LangChain = () => {
   //GPTAの呼び出し＝50秒に１回
   useEffect(() => {
     const intervalA = setInterval(() => {
-      fetchGPTA();
-    }, 50000);
+      CreateGPTA();
+    }, 20000);
 
     const intervalB = setInterval(() => {
-      fetchGPTB();
+      CreateGPTB();
     }, 80000);
 
     const intervalC = setInterval(() => {
-      fetchGPTC();
+      CreateGPTC();
     }, 100000);
 
     return () => {
@@ -102,7 +106,7 @@ const LangChain = () => {
       clearInterval(intervalB);
       clearInterval(intervalC);
     };
-  }, [fetchGPTA]);
+  }, [CreateGPTA]);
 
   // オセロのLINE画面と同じ仕組み
 

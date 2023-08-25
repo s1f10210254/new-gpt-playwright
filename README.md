@@ -52,6 +52,12 @@ $ npm run dev:client
 $ npm run dev:server
 ```
 
+### 追記（追加モジュール）
+
+```sh
+$ npm install langchain
+```
+
 Playwright を一度でも起動すると node-dev の再起動が動かなくなるため notios が使えない
 
 Playwright 起動以降は server 配下のコードを書き換えるたびに npm run dev:server をやり直す
