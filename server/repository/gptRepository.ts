@@ -242,6 +242,7 @@ export const gptRepository = {
   },
 
   fetchPlayBrwser: async (): Promise<void> => {
+    //ローカルホスト３０００番
     await getLoggedInPage1();
   },
 };
