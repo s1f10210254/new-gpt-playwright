@@ -1,16 +1,19 @@
-import { TWITTER_PASSWORD, TWITTER_USERNAME } from '$/service/envValues';
-// import { OpenAI } from 'openai';
-import dotenv from 'dotenv';
+import { OPENAIAPI, TWITTER_PASSWORD, TWITTER_USERNAME } from '$/service/envValues';
 import { ConversationChain } from 'langchain/chains';
-import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { OpenAI } from 'langchain/llms/openai';
 import type { Browser, BrowserContext, Page } from 'playwright';
 import { chromium } from 'playwright';
 
-dotenv.config();
-const env = process.env;
+// dotenv.config();
+// const OPENAIAPI = process.env.OPENAI_API ?? '';
 
-console.log('envファイル', env.OPENAI_API_KEY);
+// const env = process.env;
 
+// console.log('envファイル', env.OPENAI_API_KEY);
+
+const llm = new OpenAI({
+  openAIApiKey: OPENAIAPI,
+});
 const origin = 'https://twitter.com';
 
 let browser: Browser | null = null;
@@ -103,7 +106,7 @@ export const sell = `
 export const run = async () => {
   // LLMの準備
   console.log('run関数が読み出されました');
-  const llm = new ChatOpenAI({ temperature: 0 });
+  // const llm = new ChatOpenAI({ temperature: 0 });
 
   console.log('llm');
   // ConversationChainの準備
