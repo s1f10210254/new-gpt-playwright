@@ -37,9 +37,9 @@ const GPTA = async () => {
     max_tokens: 50,
   });
 
-  const answerArray = completion.choices.map((choice) => choice.message.content);
-  const filteredAnswerArray = answerArray.filter((content) => content !== null);
-  const answer = filteredAnswerArray.join(' '); // 文字列を結合
+//   const answerArray = completion.choices.map((choice) => choice.message.content);
+//   const filteredAnswerArray = answerArray.filter((content) => content !== null);
+//   const answer = filteredAnswerArray.join(' '); // 文字列を結合
 
   console.log(answer);
   return answer;
@@ -198,6 +198,7 @@ export const gptRepository = {
   },
 
   fetchGPTC: async (): Promise<string[]> => {
+    // const contents = await GPTA();
     // const contents = await GPTA();
     console.log('fetchGPTCが読み出されました。');
 
