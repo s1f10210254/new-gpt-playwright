@@ -1,11 +1,10 @@
-import { OPENAIAPI, TWITTER_PASSWORD, TWITTER_USERNAME } from '$/service/envValues';
-import { OpenAI } from 'openai';
+import { TWITTER_PASSWORD, TWITTER_USERNAME } from '$/service/envValues';
+import axios from 'axios';
+import { ConversationChain } from 'langchain/chains';
+import { OpenAI } from 'langchain/llms/openai';
 import type { Browser, BrowserContext, Page } from 'playwright';
 import { chromium } from 'playwright';
 
-// const llm = new OpenAI({
-//   openAIApiKey: OPENAIAPI,
-// });
 const origin = 'https://twitter.com';
 
 let browser: Browser | null = null;
@@ -30,10 +29,7 @@ const getLoggedInPage = async () => {
   return page;
 };
 
-const openai = new OpenAI({
-  apiKey: OPENAIAPI,
-});
-
+/*
 const GPTA = async () => {
   const completion = await openai.chat.completions.create({
     messages: [{ role: 'user', content: '簡単で面白いことを言ってください' }],
@@ -48,106 +44,164 @@ const GPTA = async () => {
   console.log(answer);
   return answer;
 };
+*/
 
-// const getStockPrice = async () => {
-//   const apiKey = 'L9ZH7B1TW75Z7VZE';
-//   // const symbol = 'AAPL';
-//   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=USDJPY&interval=15min&apikey=${apiKey}`;
+const getStockPrice = async () => {
+  const apiKey = 'L9ZH7B1TW75Z7VZE '; // Alpha VantageのAPIキーに置き換えてください
+  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=USDJPY&interval=60min&apikey=${apiKey}`;
 
-//   try {
-//     const response = await axios.get(url);
-//     const timeSeries = response.data['Time Series (15min)'];
-//     const timestamps = Object.keys(timeSeries);
-//     const latesttimestamps = timestamps.slice(0, 8);
+  const response = await axios.get(url);
+  const timeSeries = response.data['Time Series (60min)'];
+  const timestamps = Object.keys(timeSeries);
+  const latesttimestamps = timestamps.slice(0, 24);
 
-//     const stockdata = latesttimestamps.map((timestamp) => ({
-//       time: timestamp,
-//       open: timeSeries[timestamp]['1. open'],
-//       high: timeSeries[timestamp]['2. high'],
-//       low: timeSeries[timestamp]['3. low'],
-//       close: timeSeries[timestamp]['4. close'],
-//     }));
+  // Create an object to store all prices
+  const prices: { [key: string]: any } = {};
 
-//     return stockdata;
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// };
+  latesttimestamps.forEach((timestamp) => {
+    prices[timestamp] = {
+      time: timestamp,
+      open: timeSeries[timestamp]['1. open'],
+      high: timeSeries[timestamp]['2. high'],
+      low: timeSeries[timestamp]['3. low'],
+      close: timeSeries[timestamp]['4. close'],
+    };
+  });
 
+  // Return the prices object instead of array
+  return prices;
+};
+/*
 export const character = `
 あなたが先程購入した金額をxとします。xが2%減少した際には即売却するものとします。xが上昇している場合は下がるまでに到達した最大の額から2%減った際に売却するものとします。売却した日時を記録するようにしてください
 `;
+*/
+export const buyA = `
+取得した24時間の中で最も安い株を購入してください。
 
-export const buy = `
-現在のFXのレートがあるものとします。あなたは今50万円持っているものとし、そのお金でFX投資をするものとします。
+制約条件
+* あなたの所持金は50万円です。
+* 購入する際、一回で全ての額を使い切らずに幾つかに分割するようにしてください
+* 購入した株の数、使用した金額、購入日時を明記してください
+* あなたの答えは数字のみです。余計な文章はいりません。 (例: x株, y円, z時a分)
+`;
+
+export const buyB = `
+取得した24時間の中でランダムな株を購入してください。
+
+制約条件
+* あなたの所持金は50万円です。
+* 購入した株の数、使用した金額、購入日時を明記してください
+* あなたの答えは数字のみです。余計な文章はいりません。 (例: x株, y円, z時a分)
 `;
 
 export const sell = `
 売却した際の収支、日時を表示してください
 `;
 
-// export const run = async () => {
-//   // LLMの準備
-//   console.log('run関数が読み出されました');
-//   // const llm = new ChatOpenAI({ temperature: 0 });
+export const runA = async () => {
+  // LLMの準備
+  const llm = new OpenAI({ temperature: 0 });
 
-//   console.log('llm');
-//   // ConversationChainの準備
-//   // const chain = new ConversationChain({ llm });
-//   const chain = new ConversationChain({ llm });
+  // ConversationChainの準備
+  const chain = new ConversationChain({ llm });
 
-//   /*
-//   const kabuka = getStockPrice().then((stockData) => {
-//     console.log(stockData);
-//   }); //ここで直近２時間の株価表示、なんかAPI止まったから放置してる
+  const fxprice = await getStockPrice();
 
-//   */
-//   // 会話の実行
-//   const input1 = buy; //例として直近２時間で一番安かったときのものを買うようにしてみてる
-//   const res1 = await chain.call({ input: input1 });
-//   console.log('Human:', input1);
-//   console.log('AI:', res1['response']);
+  // 会話の実行
+  const input1 = `$${JSON.stringify(
+    fxprice,
+    null,
+    2
+  )}は直近2時間の証券取引所の価格データです。${buyA}`;
+  const res1 = await chain.call({ input: input1 });
+  console.log('Human:', input1);
+  console.log('AI:', res1);
+  /*
+  // 会話の実行
+  const input2 = character; //戦略入力
+  const res2 = await chain.call({ input: input2 });
+  console.log("Human:", input2);
+  console.log("AI:", res2["response"]); 
+*/
+  // 会話の実行
+  const input3 = sell; //売却、収支と日時出力
+  const res3 = await chain.call({ input: input3 });
+  console.log('Human:', input3);
+  console.log('AI:', res3);
+  return res3['response'];
+};
 
-//   // 会話の実行
-//   const input2 = character; //戦略入力
-//   const res2 = await chain.call({ input: input2 });
-//   console.log('Human:', input2);
-//   console.log('AI:', res2['response']);
+export const runB = async () => {
+  // LLMの準備
+  const llm = new OpenAI({ temperature: 0 });
 
-//   // 会話の実行
-//   const input3 = sell; //売却、収支と日時出力
-//   const res3 = await chain.call({ input: input3 });
-//   console.log('Human:', input3);
-//   console.log('AI:', res3['response']);
+  // ConversationChainの準備
+  const chain = new ConversationChain({ llm });
 
-//   return res3['response'];
-// };
+  const fxprice = await getStockPrice();
+
+  // 会話の実行
+  const input1 = `$${JSON.stringify(
+    fxprice,
+    null,
+    2
+  )}は直近2時間の証券取引所の価格データです。${buyB}`;
+  const res1 = await chain.call({ input: input1 });
+  console.log('Human:', input1);
+  console.log('AI:', res1);
+  /*
+  // 会話の実行
+  const input2 = character; //戦略入力
+  const res2 = await chain.call({ input: input2 });
+  console.log("Human:", input2);
+  console.log("AI:", res2["response"]); 
+*/
+  // 会話の実行
+  const input3 = sell; //売却、収支と日時出力
+  const res3 = await chain.call({ input: input3 });
+  console.log('Human:', input3);
+  console.log('AI:', res3);
+  return res3['response'];
+};
+
+export const runC = async () => {
+  // LLMの準備
+  const llm = new OpenAI({ temperature: 0 });
+
+  // ConversationChainの準備
+  const chain = new ConversationChain({ llm });
+
+  // 会話の実行
+  const input1 = `${runA}で求めた収支と${runB}で求めた収支を合わせて合計の収支を求めてください`;
+  const res1 = await chain.call({ input: input1 });
+  console.log('total:', res1['response']);
+};
 
 export const gptRepository = {
   fetchGPTA: async (): Promise<string[]> => {
-    const contents = await GPTA();
+    //const contents = await GPTA();
     console.log('fetchGPTAが読み出されました。');
-    // const contents = await run();
+    const contents = await runA();
 
     return [contents];
   },
 
   fetchGPTB: async (): Promise<string[]> => {
-    const contents = await GPTA();
+    //const contents = await GPTA();
 
     console.log('fetchGPTBが読み出されました。');
 
-    // const contents = await run();
+    const contents = await runB();
 
     return [contents];
   },
 
   fetchGPTC: async (): Promise<string[]> => {
-    const contents = await GPTA();
+    // const contents = await GPTA();
     console.log('fetchGPTCが読み出されました。');
 
-    // const contents = await run();
+    const contents = await runA();
 
     return [contents];
   },
