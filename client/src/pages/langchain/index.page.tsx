@@ -41,6 +41,10 @@ const LangChain = () => {
   const [messagesList2, setMessagesList2] = useState<string[]>([]);
   const [messagesList3, setMessagesList3] = useState<string[]>([]);
 
+  const playBrwser = async () => {
+    await apiClient.playbrwser.$get().catch(returnNull);
+  };
+
   const fetchTweet = async (message: string) => {
     // const res = await apiClient.GPTTweet.$post({ message }).catch(returnNull);
     console.log('aaa');
@@ -60,6 +64,7 @@ const LangChain = () => {
         const newMessages = [...prevMessages, ...res];
         if (newMessages.length > prevMessages.length) {
           console.log('nweMessages');
+          playBrwser();
           fetchTweet(newMessages[newMessages.length - 1]);
         }
         return newMessages;
