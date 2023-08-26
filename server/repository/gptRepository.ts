@@ -69,8 +69,16 @@ const getLoggedInPage1 = async () => {
 //   return answer;
 // };
 
+// interface Price {
+//   time: string;
+//   open: string;
+//   high: string;
+//   low: string;
+//   close: string;
+// }
+
 // const getStockPrice = async () => {
-//   const apiKey = 'L9ZH7B1TW75Z7VZE '; // Alpha VantageのAPIキーに置き換えてください
+//   const apiKey = 'L9ZH7B1TW75Z7VZE'; // Alpha VantageのAPIキーに置き換えてください
 //   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=USDJPY&interval=60min&apikey=${apiKey}`;
 
 //   const response = await axios.get(url);
@@ -79,7 +87,7 @@ const getLoggedInPage1 = async () => {
 //   const latesttimestamps = timestamps.slice(0, 24);
 
 //   // Create an object to store all prices
-//   const prices: { [key: string]: any } = {};
+//   const prices: Record<string, Price> = {};
 
 //   latesttimestamps.forEach((timestamp) => {
 //     prices[timestamp] = {
@@ -94,11 +102,10 @@ const getLoggedInPage1 = async () => {
 //   // Return the prices object instead of array
 //   return prices;
 // };
-/*
 export const character = `
 あなたが先程購入した金額をxとします。xが2%減少した際には即売却するものとします。xが上昇している場合は下がるまでに到達した最大の額から2%減った際に売却するものとします。売却した日時を記録するようにしてください
 `;
-*/
+
 export const buyA = `
 取得した24時間の中で最も安い株を購入してください。
 
