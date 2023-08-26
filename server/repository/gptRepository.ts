@@ -1,4 +1,4 @@
-import { OPENAIAPI, TWITTER_PASSWORD, TWITTER_USERNAME } from '$/service/envValues';
+import { TWITTER_PASSWORD, TWITTER_USERNAME } from '$/service/envValues';
 import axios from 'axios';
 import { ConversationChain } from 'langchain/chains';
 import { OpenAI } from 'langchain/llms/openai';
@@ -8,7 +8,7 @@ import { chromium } from 'playwright';
 const origin = 'https://twitter.com';
 
 const llm = new OpenAI({
-  openAIApiKey: OPENAIAPI,
+  openAIApiKey: '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',
   temperature: 0,
 });
 
@@ -110,11 +110,11 @@ export const sell = `
 
 export const runA = async () => {
   // LLMの準備
-  const llm = new OpenAI({ temperature: 0 });
+  // const llm = new OpenAI({ temperature: 0 });
 
   // ConversationChainの準備
   const chain = new ConversationChain({ llm });
-  const fxprice = await getStockPrice();
+  const fxprice = getStockPrice();
 
   // 会話の実行
   const input1 = `${JSON.stringify(
@@ -122,7 +122,7 @@ export const runA = async () => {
     null,
     2
   )}は直近24時間の証券取引所の価格データです。${buyA}`;
-  const res1 = await chain.call({ input: input1 });
+  const res1 = chain.call({ input: input1 });
   console.log('lim1が読み込まれた');
   console.log('Human:', input1);
   console.log('AI:', res1);
@@ -143,7 +143,7 @@ export const runA = async () => {
 
 export const runB = async (): Promise<string> => {
   // LLMの準備
-  const llm = new OpenAI({ temperature: 0 });
+  // const llm = new OpenAI({ temperature: 0 });
 
   // ConversationChainの準備
   const chain = new ConversationChain({ llm });
