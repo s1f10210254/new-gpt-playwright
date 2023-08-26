@@ -135,25 +135,25 @@ export const runA = async () => {
 
   // ConversationChainの準備
   const chain = new ConversationChain({ llm });
-
-  // const fxprice = await getStockPrice();
+  // const fxprice = getStockPrice();
 
   // 会話の実行
-  const input1 = `$${JSON.stringify(
+  const input1 = `${JSON.stringify(
     // fxprice,
     null
     // 2
-  )}は直近2時間の証券取引所の価格データです。${buyA}`;
-  const res1 = await chain.call({ input: input1 });
+  )}は直近24時間の証券取引所の価格データです。${buyA}`;
+  const res1 = chain.call({ input: input1 });
+  console.log('lim1が読み込まれた');
   console.log('Human:', input1);
   console.log('AI:', res1);
-  /*
+
   // 会話の実行
   const input2 = character; //戦略入力
   const res2 = await chain.call({ input: input2 });
-  console.log("Human:", input2);
-  console.log("AI:", res2["response"]);
-*/
+  console.log('Human:', input2);
+  console.log('AI:', res2['response']);
+
   // 会話の実行
   const input3 = sell; //売却、収支と日時出力
   const res3 = await chain.call({ input: input3 });
@@ -162,9 +162,9 @@ export const runA = async () => {
   return res3['response'];
 };
 
-export const runB = async () => {
+export const runB = async (): Promise<string> => {
   // LLMの準備
-  const llm = new OpenAI({ temperature: 0 });
+  // const llm = new OpenAI({ temperature: 0 });
 
   // ConversationChainの準備
   const chain = new ConversationChain({ llm });
@@ -172,21 +172,21 @@ export const runB = async () => {
   // const fxprice = await getStockPrice();
 
   // 会話の実行
-  const input1 = `$${JSON.stringify(
+  const input1 = `${JSON.stringify(
     // fxprice,
     null
     // 2
-  )}は直近2時間の証券取引所の価格データです。${buyB}`;
+  )}は直近24時間の証券取引所の価格データです。${buyB}`;
   const res1 = await chain.call({ input: input1 });
   console.log('Human:', input1);
   console.log('AI:', res1);
-  /*
+
   // 会話の実行
   const input2 = character; //戦略入力
   const res2 = await chain.call({ input: input2 });
-  console.log("Human:", input2);
-  console.log("AI:", res2["response"]);
-*/
+  console.log('Human:', input2);
+  console.log('AI:', res2['response']);
+
   // 会話の実行
   const input3 = sell; //売却、収支と日時出力
   const res3 = await chain.call({ input: input3 });
@@ -195,7 +195,7 @@ export const runB = async () => {
   return res3['response'];
 };
 
-export const runC = async () => {
+export const runC = async (): Promise<string> => {
   // LLMの準備
   // const llm = new OpenAI({ temperature: 0 });
 
@@ -206,8 +206,8 @@ export const runC = async () => {
   const input1 = `${runA}で求めた収支と${runB}で求めた収支を合わせて合計の収支を求めてください`;
   const res1 = await chain.call({ input: input1 });
   console.log('total:', res1['response']);
+  return res1['response'];
 };
-
 export const gptRepository = {
   fetchGPTA: async (): Promise<string[]> => {
     // const contents = await GPTA();
